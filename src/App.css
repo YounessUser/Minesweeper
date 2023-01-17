@@ -1,0 +1,43 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  color: #343434;
+}
+
+.App{
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-row: 1 / 1;
+  grid-column: 1 / 1;
+  grid-gap: 5px;
+  width: 400px;
+  height: 600px;
+}
+
+.square {
+  background-color: #6F8FAF;
+  border: 1px solid #EEE;
+  width: 50px;
+  height: 50px;
+  
+}
+
+.show-trap{
+  background-color: #343434;
+}
+
+.square:hover {
+  opacity: 0.8;
+}
+
+.show-square{
+  background-color: #EEE;
+}
+
+.show-square::before{
+  content: attr(data-srounded-traps);
+  
+
+}
