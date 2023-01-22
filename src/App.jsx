@@ -1,15 +1,20 @@
-import React, { useState, useEffect} from "react";
+import React from "react";
 import './App.css'
 
-const ROWS_COUNT = 10;
-const COLUMN_COUNT = 7;
-const TRAPS_COUNT = 11;
+const ROWS_COUNT = 16;
+const COLUMN_COUNT = 16;
+const TRAPS_COUNT = 32;
+
 class App extends React.Component {
-  
+
   constructor(props) {
     super(props);
     this.state = {
-      squares: []
+      squares: [],
+      currentLevel: 0,
+      rows: 10,
+      column: 7,
+      trapsCount: 11
     }
     this.handleClick = this.handleClick.bind(this);
     this.nonTrapsSqauresCount = 0;
@@ -27,10 +32,9 @@ class App extends React.Component {
     this.setState({
       squares: squares
     }, () => {
-        
         console.log(this.state.squares, this.nonTrapsSqauresCount)
       }
-    );    
+    );
   }
 
   getSquares() {
@@ -46,7 +50,7 @@ class App extends React.Component {
         });
       }
     }
-    
+
     return squares;
   }
 
@@ -69,7 +73,6 @@ class App extends React.Component {
   }
 
   sroundedSquares(sqaureID) {
-  
     const [row, column] = sqaureID.split("-").map( Number );
     let result = [];
     let surrounding = [
@@ -89,7 +92,6 @@ class App extends React.Component {
         }
     });
 
-  
     return result;
   }
 
@@ -112,7 +114,7 @@ class App extends React.Component {
   handleClick(e){
     let squares = this.state.squares;
     let squareSelected = squares.find(item => item.id === e.target.id);
-    
+
     if(squareSelected.isTrap) {
       let gameover = false;
       squares.forEach((square) => {
@@ -126,38 +128,31 @@ class App extends React.Component {
         setTimeout(() => {
           this.startGame();
         }, 1000);
-      } 
-
-      
-
-
-      // e.target.classList.add('show-trap');
+      }
     } else {
       squares.forEach((square) => {
         if(squareSelected.id === square.id) {
           square.showSquare = true;
         }
-      })
+      });
 
       if(squareSelected.sroundedTraps === 0){
-        squares = this.clearNoTrapSquares(squares, squareSelected.id)
-      } 
-
-      let unselectedSquare = squares.filter(item => item.showSquare === true).length;
-      console.log("unselectedSquare", unselectedSquare);
-      if(unselectedSquare === this.nonTrapsSqauresCount){
-        if (window.confirm("You won")) {
-          squares = this.startGame();
-        }
+        squares = this.clearNonTrapSquares(squares, squareSelected.id)
       }
     }
 
     this.setState({
       squares: squares
-    })
+    });
+
+    let unselectedSquare = squares.filter(item => item.showSquare === true).length;
+    console.log("unselectedSquare", unselectedSquare);
+    if(unselectedSquare === this.nonTrapsSqauresCount && window.confirm("You won")){
+        squares = this.startGame();
+    }
   }
 
-  clearNoTrapSquares(squares, squareID){
+  clearNonTrapSquares(squares, squareID){
     let sroundedSquares = this.sroundedSquares(squareID);
     squares.forEach((square) =>{
       if(sroundedSquares.includes(square.id) && square.isTrap === false){
@@ -176,12 +171,13 @@ class App extends React.Component {
   }
 
   render() {
+    let style = {display: "grid", gridTemplateColumns: "repeat("+COLUMN_COUNT+", 1fr)"};
     return (
-      <div className="App">
+      <div className="App" style={style}>
         {this.state.squares.map((square, index)=>{
-          return (<div className={this.getClassName(square)} 
-            key={index} 
-            id={square.id} 
+          return (<div className={this.getClassName(square)}
+            key={index}
+            id={square.id}
             data-srounded-traps={square.sroundedTraps}
             onClick={this.handleClick}></div>);
         })}
